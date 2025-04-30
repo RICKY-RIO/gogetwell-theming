@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import cardiologyTheme from "./themes/cardiology";
+import dermatologyTheme from "./themes/dermatology";
 
-function App() {
+const themeMap = {
+  cardiology: cardiologyTheme,
+  dermatology: dermatologyTheme,
+};
+
+const ThemedApp = () => {
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const specialty = params.get("specialty") || "cardiology";
+    setTheme(themeMap[specialty]);
+  }, [setTheme]);
+
+  if (!theme.primaryColor) return <div>Loading Theme...</div>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      style={{
+        backgroundColor: theme.backgroundColor,
+        fontFamily: theme.fontFamily,
+        minHeight: "100vh",
+        padding: "20px",
+      }}
+    >
+      <h1 style={{ color: theme.primaryColor }}>GoGetWell - Themed Store</h1>
+      <p>This is a themed page based on {theme.fontFamily.includes("Georgia") ? "Dermatology" : "Cardiology"}</p>
     </div>
   );
-}
+};
+
+const App = () => (
+  <ThemeProvider>
+    <ThemedApp />
+  </ThemeProvider>
+);
 
 export default App;
